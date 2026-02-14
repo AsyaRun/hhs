@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoChurn — Customer Success Advisory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: '#fafaf8',
+            surface: '#ffffff',
+            border: '#e8e6e1',
+            accent: '#1a1a1a',
+            muted: '#6b6b6b',
+            subtle: '#9a9a9a',
+            primary: '#2c2c2c',
+            highlight: '#f5f4f0',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { -webkit-font-smoothing: antialiased; }
+    .case-grid { display: grid; grid-template-columns: 160px 1fr; gap: 0; }
+    @media (max-width: 640px) { .case-grid { grid-template-columns: 1fr; } }
+    .funnel-step { counter-increment: funnel; }
+    .funnel-step::before {
+      content: counter(funnel);
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #1a1a1a; color: #fff;
+      font-size: 13px; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .funnel-list { counter-reset: funnel; }
+  </style>
+</head>
+<body class="bg-bg font-sans text-primary antialiased">
+
+  <!-- Cookie Banner -->
+  <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 z-[60] bg-accent text-white px-6 py-4 hidden">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <p class="text-sm text-gray-300">We use cookies to analyze site usage. By continuing, you agree to our <a href="#privacy" class="underline text-white">Privacy Policy</a>.</p>
+      <div class="flex gap-3 flex-shrink-0">
+        <button onclick="acceptCookies()" class="bg-white text-accent text-sm font-medium px-5 py-2 rounded hover:bg-gray-100 transition">Accept</button>
+        <button onclick="declineCookies()" class="text-sm text-gray-400 hover:text-white transition">Decline</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-bg/90 backdrop-blur-md border-b border-border">
+    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="text-lg font-semibold tracking-tight text-accent">NoChurn</a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#method" class="text-[13px] font-medium text-muted hover:text-accent transition">Method</a>
+        <a href="#cases" class="text-[13px] font-medium text-muted hover:text-accent transition">Cases</a>
+        <a href="#services" class="text-[13px] font-medium text-muted hover:text-accent transition">Services</a>
+        <a href="#about" class="text-[13px] font-medium text-muted hover:text-accent transition">About</a>
+        <a href="#insights" class="text-[13px] font-medium text-muted hover:text-accent transition">Insights</a>
+        <a href="#contact" class="text-[13px] font-medium bg-accent text-white px-5 py-2 rounded hover:bg-black transition">Book intro call</a>
+      </div>
+      <button id="burger" class="md:hidden" onclick="toggleMenu()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden border-t border-border bg-bg px-6 pb-6">
+      <a href="#method" class="block py-3 text-sm text-muted" onclick="toggleMenu()">Method</a>
+      <a href="#cases" class="block py-3 text-sm text-muted" onclick="toggleMenu()">Cases</a>
+      <a href="#services" class="block py-3 text-sm text-muted" onclick="toggleMenu()">Services</a>
+      <a href="#about" class="block py-3 text-sm text-muted" onclick="toggleMenu()">About</a>
+      <a href="#insights" class="block py-3 text-sm text-muted" onclick="toggleMenu()">Insights</a>
+      <a href="#contact" class="block mt-3 text-center bg-accent text-white text-sm font-medium px-5 py-2.5 rounded" onclick="toggleMenu()">Book intro call</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="pt-32 pb-20 md:pt-44 md:pb-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-6">Customer Success Advisory</p>
+      <h1 class="text-3xl md:text-[44px] font-bold text-accent leading-[1.15] mb-6 max-w-3xl">
+        We build retention systems<br class="hidden md:block"> that reduce churn sustainably
+      </h1>
+      <p class="text-lg text-muted max-w-2xl mb-10 leading-relaxed">
+        Structured intervention for B2B companies at growth, scale, and enterprise stages. We design, implement, and measure customer success operations that protect recurring revenue.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="#assessment" class="inline-flex items-center justify-center bg-accent text-white text-sm font-medium px-7 py-3 rounded hover:bg-black transition">Take the self-assessment</a>
+        <a href="#contact" class="inline-flex items-center justify-center border border-border text-sm font-medium px-7 py-3 rounded hover:border-accent transition">Book a 30-min intro call</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Credibility bar -->
+  <section class="border-y border-border py-10">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <p class="text-2xl font-bold text-accent">35+</p>
+          <p class="text-xs text-muted mt-1 uppercase tracking-wide">Years combined experience</p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-accent">50+</p>
+          <p class="text-xs text-muted mt-1 uppercase tracking-wide">CS transformations</p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-accent">B2B</p>
+          <p class="text-xs text-muted mt-1 uppercase tracking-wide">SaaS & Enterprise focus</p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-accent">EMEA</p>
+          <p class="text-xs text-muted mt-1 uppercase tracking-wide">& CIS markets</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method -->
+  <section id="method" class="py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Our approach</p>
+      <h2 class="text-2xl md:text-3xl font-bold text-accent mb-4 max-w-2xl">Systematic, not experimental</h2>
+      <p class="text-muted max-w-2xl mb-14 leading-relaxed">Every engagement follows a four-phase methodology. We diagnose before we prescribe. We measure before we declare success.</p>
+
+      <div class="grid md:grid-cols-4 gap-px bg-border rounded-lg overflow-hidden">
+        <div class="bg-surface p-8">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 1</p>
+          <h3 class="text-base font-bold text-accent mb-2">Diagnostic</h3>
+          <p class="text-sm text-muted leading-relaxed">Process audit, churn analysis, stakeholder interviews, metric baseline.</p>
+        </div>
+        <div class="bg-surface p-8">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 2</p>
+          <h3 class="text-base font-bold text-accent mb-2">Design</h3>
+          <p class="text-sm text-muted leading-relaxed">Journey mapping, playbook architecture, team structure, tooling selection.</p>
+        </div>
+        <div class="bg-surface p-8">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 3</p>
+          <h3 class="text-base font-bold text-accent mb-2">Implementation</h3>
+          <p class="text-sm text-muted leading-relaxed">Rollout, team coaching, process integration, early warning system setup.</p>
+        </div>
+        <div class="bg-surface p-8">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 4</p>
+          <h3 class="text-base font-bold text-accent mb-2">Measurement</h3>
+          <p class="text-sm text-muted leading-relaxed">KPI tracking, iteration cycles, quarterly business review cadence.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cases -->
+  <section id="cases" class="py-20 md:py-28 bg-surface border-y border-border">
+    <div class="max-w-5xl mx-auto px-6">
+      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Case studies</p>
+      <h2 class="text-2xl md:text-3xl font-bold text-accent mb-14">Structured interventions, measured outcomes</h2>
+
+      <!-- Case 1 -->
+      <div class="mb-12 pb-12 border-b border-border">
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Company stage</p>
+          <p class="text-sm text-accent">Series B SaaS, 200 employees, B2B subscription model</p>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Core problem</p>
+          <p class="text-sm text-accent">Monthly churn at 4.2% with no systematic onboarding. CS team reactive, no health scoring, no early warning system.</p>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Intervention</p>
+          <ul class="text-sm text-accent space-y-1">
+            <li>Redesigned onboarding into a 90-day structured program</li>
+            <li>Implemented health score model across 12 behavioral signals</li>
+            <li>Built escalation playbooks for at-risk accounts</li>
+          </ul>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">System changes</p>
+          <ul class="text-sm text-accent space-y-1">
+            <li>Hired and trained 3 CSMs with defined book of business</li>
+            <li>Integrated CS platform with CRM and product analytics</li>
+            <li>Established QBR cadence with top 20% accounts</li>
+          </ul>
+        </div>
+        <div class="case-grid">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Measured result</p>
+          <p class="text-sm font-semibold text-accent">Churn reduced from 4.2% to 1.8% monthly within 6 months. Net revenue retention reached 108%.</p>
+        </div>
+      </div>
+
+      <!-- Case 2 -->
+      <div class="mb-12 pb-12 border-b border-border">
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Company stage</p>
+          <p class="text-sm text-accent">Enterprise MarTech platform, 800+ employees, expansion into EMEA</p>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Core problem</p>
+          <p class="text-sm text-accent">Enterprise accounts churning at renewal due to poor executive alignment. No CS org structure — account management and CS conflated.</p>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Intervention</p>
+          <ul class="text-sm text-accent space-y-1">
+            <li>Separated CS from AM with clear RACI definition</li>
+            <li>Designed executive business review (EBR) framework</li>
+            <li>Created expansion playbook tied to product adoption milestones</li>
+          </ul>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">System changes</p>
+          <ul class="text-sm text-accent space-y-1">
+            <li>Restructured 15-person team into tiered CS model</li>
+            <li>Deployed renewal forecasting with 90-day advance visibility</li>
+            <li>Built internal CS enablement program</li>
+          </ul>
+        </div>
+        <div class="case-grid">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Measured result</p>
+          <p class="text-sm font-semibold text-accent">Renewal rate improved from 78% to 93%. Expansion revenue grew 34% YoY.</p>
+        </div>
+      </div>
+
+      <!-- Case 3 -->
+      <div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Company stage</p>
+          <p class="text-sm text-accent">Growth-stage fintech, 60 employees, transitioning from founder-led sales to scalable CS</p>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Core problem</p>
+          <p class="text-sm text-accent">Founder personally managing top 30 accounts. No CS processes documented. Key person risk at critical scale point.</p>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Intervention</p>
+          <ul class="text-sm text-accent space-y-1">
+            <li>Documented all tribal knowledge into structured playbooks</li>
+            <li>Designed hiring profile and interview process for first CS hire</li>
+            <li>Built lightweight tech stack (CRM + health scoring + alerts)</li>
+          </ul>
+        </div>
+        <div class="case-grid mb-6">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">System changes</p>
+          <ul class="text-sm text-accent space-y-1">
+            <li>Transitioned 30 accounts to dedicated CSM within 8 weeks</li>
+            <li>Zero account loss during transition</li>
+            <li>Founder freed 20+ hours/week for product and growth</li>
+          </ul>
+        </div>
+        <div class="case-grid">
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Measured result</p>
+          <p class="text-sm font-semibold text-accent">Successful founder-to-team transition. NPS improved from 42 to 61 within first quarter.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Services</p>
+      <h2 class="text-2xl md:text-3xl font-bold text-accent mb-14">What we deliver</h2>
+
+      <div class="space-y-px bg-border rounded-lg overflow-hidden">
+        <div class="bg-bg p-8 md:p-10 flex flex-col md:flex-row md:items-start gap-6">
+          <div class="md:w-48 flex-shrink-0">
+            <h3 class="text-base font-bold text-accent">CS Audit</h3>
+            <p class="text-xs text-muted mt-1">2-3 weeks</p>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm text-muted leading-relaxed mb-3">Comprehensive assessment of your current customer success maturity. Process mapping, metric analysis, team evaluation, tooling review. Delivered as a structured report with prioritized recommendations.</p>
+            <p class="text-sm font-semibold text-accent">Ideal for: Companies unsure where to start</p>
+          </div>
+        </div>
+        <div class="bg-bg p-8 md:p-10 flex flex-col md:flex-row md:items-start gap-6">
+          <div class="md:w-48 flex-shrink-0">
+            <h3 class="text-base font-bold text-accent">CS Build</h3>
+            <p class="text-xs text-muted mt-1">3-6 months</p>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm text-muted leading-relaxed mb-3">End-to-end design and implementation of customer success operations. Team structure, playbooks, tooling, metrics framework, and coaching. We stay until the system runs independently.</p>
+            <p class="text-sm font-semibold text-accent">Ideal for: Companies building CS from scratch or restructuring</p>
+          </div>
+        </div>
+        <div class="bg-bg p-8 md:p-10 flex flex-col md:flex-row md:items-start gap-6">
+          <div class="md:w-48 flex-shrink-0">
+            <h3 class="text-base font-bold text-accent">Advisory Retainer</h3>
+            <p class="text-xs text-muted mt-1">Ongoing</p>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm text-muted leading-relaxed mb-3">Strategic advisory for CS leaders. Monthly sessions, metric review, problem-solving on demand. Fractional Chief Customer Officer support for companies not ready for a full-time hire.</p>
+            <p class="text-sm font-semibold text-accent">Ideal for: Companies with CS in place, needing strategic guidance</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Self-Assessment (Lead Magnet) -->
+  <section id="assessment" class="py-20 md:py-28 bg-surface border-y border-border">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="max-w-xl mx-auto text-center">
+        <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Free resource</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-accent mb-4">CS Maturity Self-Assessment</h2>
+        <p class="text-muted mb-8 leading-relaxed">A structured diagnostic to evaluate your current customer success operations. Understand where you stand across 6 key dimensions: process, people, tooling, metrics, culture, and executive alignment.</p>
+        <form id="assessmentForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="handleAssessment(event)">
+          <input type="email" required placeholder="Work email" class="flex-1 border border-border rounded px-4 py-3 text-sm focus:outline-none focus:border-accent transition bg-white">
+          <button type="submit" class="bg-accent text-white text-sm font-medium px-6 py-3 rounded hover:bg-black transition whitespace-nowrap">Get the guide</button>
+        </form>
+        <p class="text-xs text-subtle mt-4">No spam. Unsubscribe anytime. We respect your data.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Who we are</p>
+      <h2 class="text-2xl md:text-3xl font-bold text-accent mb-14">Practitioners, not theorists</h2>
+
+      <div class="grid md:grid-cols-2 gap-12">
+        <div>
+          <div class="w-14 h-14 rounded bg-highlight flex items-center justify-center text-accent text-sm font-bold mb-5">MV</div>
+          <h3 class="text-lg font-bold text-accent mb-1">Marina Vostrikova</h3>
+          <p class="text-sm text-muted mb-4">Co-founder</p>
+          <div class="space-y-2 text-sm text-muted leading-relaxed">
+            <p>20+ years in IT, customer service, and B2B sales leadership. Former Director of Customer Service at Bitrix24.</p>
+            <p>Author of industry publications. Certified in Service Design, ITIL4, and Prosci CCMP.</p>
+          </div>
+        </div>
+        <div>
+          <div class="w-14 h-14 rounded bg-highlight flex items-center justify-center text-accent text-sm font-bold mb-5">AA</div>
+          <h3 class="text-lg font-bold text-accent mb-1">Anya Ambrozevich</h3>
+          <p class="text-sm text-muted mb-4">Co-founder</p>
+          <div class="space-y-2 text-sm text-muted leading-relaxed">
+            <p>15+ years in MarTech at Otto Group, PepsiCo, PMI, and Alibaba. Former Chief Customer Officer managing 20+ enterprise accounts.</p>
+            <p>International MarTech expert. Regular speaker at industry conferences across EMEA.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insights -->
+  <section id="insights" class="py-20 md:py-28 bg-surface border-y border-border">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="flex items-end justify-between mb-14">
+        <div>
+          <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Insights</p>
+          <h2 class="text-2xl md:text-3xl font-bold text-accent">Thinking on retention</h2>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
+        <a href="#" class="bg-bg p-8 group">
+          <p class="text-xs text-muted uppercase tracking-widest mb-3">Analysis</p>
+          <h3 class="text-base font-bold text-accent mb-2 group-hover:underline">Why onboarding is a retention problem, not a product problem</h3>
+          <p class="text-sm text-muted">Most churn decisions are made in the first 30 days. Here is what to measure and what to change.</p>
+        </a>
+        <a href="#" class="bg-bg p-8 group">
+          <p class="text-xs text-muted uppercase tracking-widest mb-3">Framework</p>
+          <h3 class="text-base font-bold text-accent mb-2 group-hover:underline">The 4 signals that predict churn 90 days before it happens</h3>
+          <p class="text-sm text-muted">A practical health scoring model for B2B SaaS with under 500 customers.</p>
+        </a>
+        <a href="#" class="bg-bg p-8 group">
+          <p class="text-xs text-muted uppercase tracking-widest mb-3">Operations</p>
+          <h3 class="text-base font-bold text-accent mb-2 group-hover:underline">When to hire your first CSM: the founder transition playbook</h3>
+          <p class="text-sm text-muted">Structured approach to moving from founder-led CS to a scalable team model.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lead Funnel: Book Intro Call -->
+  <section id="contact" class="py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="max-w-xl mx-auto text-center">
+        <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Next step</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-accent mb-4">Book a 30-minute intro call</h2>
+        <p class="text-muted mb-8 leading-relaxed">No pitch, no pressure. We listen to your situation, ask diagnostic questions, and tell you honestly whether we can help. If there is a fit, we follow up with a tailored audit proposal.</p>
+
+        <!-- Calendly embed placeholder -->
+        <div class="border border-border rounded-lg p-10 mb-6 bg-surface">
+          <p class="text-sm text-muted mb-4">Select a time that works for you</p>
+          <!-- Replace with: <div class="calendly-inline-widget" data-url="https://calendly.com/YOUR_LINK" style="min-width:320px;height:630px;"></div> -->
+          <a href="https://calendly.com/" target="_blank" class="inline-flex items-center justify-center bg-accent text-white text-sm font-medium px-7 py-3 rounded hover:bg-black transition">Open scheduling page</a>
+        </div>
+
+        <p class="text-sm text-muted">Or email directly: <a href="mailto:anastasiapozdniakowa@gmail.com" class="text-accent underline">anastasiapozdniakowa@gmail.com</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Funnel overview (hidden section for reference) -->
+  <section class="py-16 border-t border-border">
+    <div class="max-w-5xl mx-auto px-6">
+      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-8">How we work together</p>
+      <div class="funnel-list space-y-4 max-w-lg">
+        <div class="funnel-step flex items-center gap-4">
+          <span class="text-sm text-muted">Take the self-assessment or download a guide</span>
+        </div>
+        <div class="funnel-step flex items-center gap-4">
+          <span class="text-sm text-muted">Receive a structured diagnostic summary</span>
+        </div>
+        <div class="funnel-step flex items-center gap-4">
+          <span class="text-sm text-muted">Book a 30-minute intro call</span>
+        </div>
+        <div class="funnel-step flex items-center gap-4">
+          <span class="text-sm text-muted">We deliver a tailored audit proposal</span>
+        </div>
+        <div class="funnel-step flex items-center gap-4">
+          <span class="text-sm text-muted">Engagement begins</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-border py-12">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="grid md:grid-cols-3 gap-8 mb-10">
+        <div>
+          <p class="text-sm font-semibold text-accent mb-3">NoChurn</p>
+          <p class="text-sm text-muted leading-relaxed">Customer Success advisory for B2B companies that take retention seriously.</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Navigation</p>
+          <div class="space-y-2">
+            <a href="#method" class="block text-sm text-muted hover:text-accent transition">Method</a>
+            <a href="#cases" class="block text-sm text-muted hover:text-accent transition">Cases</a>
+            <a href="#services" class="block text-sm text-muted hover:text-accent transition">Services</a>
+            <a href="#about" class="block text-sm text-muted hover:text-accent transition">About</a>
+            <a href="#insights" class="block text-sm text-muted hover:text-accent transition">Insights</a>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Connect</p>
+          <div class="space-y-2">
+            <a href="mailto:anastasiapozdniakowa@gmail.com" class="block text-sm text-muted hover:text-accent transition">anastasiapozdniakowa@gmail.com</a>
+            <a href="https://www.linkedin.com/in/anastasiapozdniakowa" target="_blank" class="block text-sm text-muted hover:text-accent transition">LinkedIn</a>
+            <a href="https://t.me/Zanzibar020" target="_blank" class="block text-sm text-muted hover:text-accent transition">Telegram</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-subtle">&copy; 2026 NoChurn. All rights reserved.</p>
+        <div class="flex gap-6">
+          <a href="#privacy" class="text-xs text-subtle hover:text-muted transition">Privacy Policy</a>
+          <a href="#terms" class="text-xs text-subtle hover:text-muted transition">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Privacy Policy -->
+  <section id="privacy" class="py-20 border-t border-border hidden">
+    <div class="max-w-3xl mx-auto px-6">
+      <h2 class="text-2xl font-bold text-accent mb-6">Privacy Policy</h2>
+      <div class="prose prose-sm text-muted">
+        <p>Last updated: February 2026</p>
+        <p>We collect only the data you provide (email address, name) through our forms. We use this data solely to respond to your inquiry and, with your consent, send educational content. We do not sell or share your data with third parties. You may request deletion of your data at any time by emailing anastasiapozdniakowa@gmail.com. We use analytics cookies to understand site usage — you can opt out via the cookie banner.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Terms -->
+  <section id="terms" class="py-20 border-t border-border hidden">
+    <div class="max-w-3xl mx-auto px-6">
+      <h2 class="text-2xl font-bold text-accent mb-6">Terms of Service</h2>
+      <div class="prose prose-sm text-muted">
+        <p>Last updated: February 2026</p>
+        <p>This website is provided for informational purposes. All content is the intellectual property of NoChurn. Service agreements are governed by individual contracts. Results described in case studies are specific to each engagement and are not guaranteed.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('mobileMenu').classList.toggle('hidden');
+    }
+
+    function handleAssessment(e) {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.querySelector('input[type="email"]').value;
+      form.innerHTML = '<p class="text-sm text-accent font-medium py-3">Thank you. Check your inbox for the self-assessment guide.</p>';
+      // TODO: Connect to email service (Mailchimp, ConvertKit, etc.)
+    }
+
+    // Cookie banner
+    function showCookieBanner() {
+      if (!localStorage.getItem('cookieConsent')) {
+        document.getElementById('cookieBanner').classList.remove('hidden');
+      }
+    }
+    function acceptCookies() {
+      localStorage.setItem('cookieConsent', 'accepted');
+      document.getElementById('cookieBanner').classList.add('hidden');
+      // TODO: Initialize analytics (GA, Plausible, etc.)
+    }
+    function declineCookies() {
+      localStorage.setItem('cookieConsent', 'declined');
+      document.getElementById('cookieBanner').classList.add('hidden');
+    }
+
+    // Privacy/Terms toggle
+    document.querySelectorAll('a[href="#privacy"], a[href="#terms"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        document.querySelectorAll('#privacy, #terms').forEach(s => s.classList.add('hidden'));
+        target.classList.toggle('hidden');
+        target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    window.addEventListener('load', showCookieBanner);
+  </script>
+</body>
+</html>
