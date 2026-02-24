@@ -208,12 +208,81 @@
   }
 </style>
 
+<style>
+  .cases-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+
+  .case-card {
+    padding: 2.5rem 2rem 2.5rem 0;
+    border-right: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .case-card:not(:first-child) {
+    padding-left: 2rem;
+  }
+
+  .case-card:last-child {
+    border-right: none;
+  }
+
+  .case-title {
+    transition: font-size 0.3s ease;
+  }
+
+  .case-card:hover .case-title {
+    font-size: 1.6rem;
+  }
+
+  .case-row-item {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .cases-row {
+      grid-template-columns: 1fr;
+    }
+    .case-card {
+      border-right: none;
+      border-bottom: 1px solid #e5e5e5;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+</style>
+
 <section id="cases" class="py-20 md:py-28 bg-surface border-y border-border">
   <div class="max-w-5xl mx-auto px-6">
 
     <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Case studies</p>
-    <h2 class="text-2xl md:text-3xl font-bold text-accent mb-14">Structured interventions, measured outcomes</h2>
+    <h2 class="text-2xl md:text-3xl font-bold text-accent mb-10">Structured interventions, measured outcomes</h2>
 
+    <!-- Origin of Framework -->
+    <div class="mb-12 pb-12 border-b border-border">
+      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-6">Origin of Framework</p>
+      <div class="case-grid">
+        <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">The Origin of 3F</p>
+        <p class="text-sm text-accent leading-relaxed">
+          Compliance-driven industries such as MedTech and Biotech use two core instruments to build stable business systems:<br><br>
+          Predictability — outcomes can be reproduced.<br>
+          Traceability — decisions and results are linked through data and clear cause-and-effect logic.<br><br>
+          These mechanisms transform complexity into a measurable and manageable system.
+          Applied to SaaS, they redefine Customer Success as a structured, evidence-based discipline.
+          When causes are visible and measurable, churn, retention, revenue growth, and expansion stop being assumptions.
+          They become operational variables that can be diagnosed and managed.
+        </p>
+      </div>
+    </div>
+
+    <!-- Three blocks -->
     <div class="cases-row">
 
       <!-- 01 — Foundation -->
