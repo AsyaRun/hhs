@@ -3,23 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Healthy Human Systems — CSM & OPS Advisory</title>
+  <title>Healthy Human Systems — CSM & OPS Advisory</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link relc="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            bg: '#fafaf8',
-            surface: '#ffffff',
-            border: '#e8e6e1',
-            accent: '#1a1a1a',
-            muted: '#6b6b6b',
-            subtle: '#9a9a9a',
-            primary: '#2c2c2c',
-            highlight: '#f5f4f0',
+            navy: '#1C2A44',
+            graphite: '#3C3C3C',
+            linen: '#F4F2F0',
+            sage: '#7A835E',
+            border: 'rgba(28, 42, 68, 0.1)',
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -30,620 +26,602 @@
   </script>
   <style>
     html { scroll-behavior: smooth; }
-    body { -webkit-font-smoothing: antialiased; }
-    .case-grid { display: grid; grid-template-columns: 160px 1fr; gap: 0; }
-    @media (max-width: 640px) { .case-grid { grid-template-columns: 1fr; } }
-    .funnel-step { counter-increment: funnel; }
-    .funnel-step::before {
-      content: counter(funnel);
-      display: flex; align-items: center; justify-content: center;
-      width: 28px; height: 28px; border-radius: 50%;
-      background: #1a1a1a; color: #fff;
-      font-size: 13px; font-weight: 600;
-      flex-shrink: 0;
+    body { background-color: #F4F2F0; color: #3C3C3C; -webkit-font-smoothing: antialiased; }
+
+    /* ── Base reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .funnel-list { counter-reset: funnel; }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    /* Stagger siblings */
+    .stagger-children > * {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .stagger-children.active > *:nth-child(1) { opacity:1; transform:translateY(0); transition-delay: 0ms; }
+    .stagger-children.active > *:nth-child(2) { opacity:1; transform:translateY(0); transition-delay: 120ms; }
+    .stagger-children.active > *:nth-child(3) { opacity:1; transform:translateY(0); transition-delay: 240ms; }
+    .stagger-children.active > *:nth-child(4) { opacity:1; transform:translateY(0); transition-delay: 360ms; }
+
+    /* Slide from left */
+    .slide-left {
+      opacity: 0;
+      transform: translateX(-28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .slide-left.active { opacity: 1; transform: translateX(0); }
+
+    /* ── Hero text animation ── */
+    .hero-line {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .hero-line.active { opacity: 1; transform: translateY(0); }
+
+    /* ── Scroll progress ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 2px; width: 0%;
+      background: #7A835E;
+      z-index: 100;
+      transition: width 0.08s linear;
+    }
+
+    /* ── Nav scroll state ── */
+    nav { transition: box-shadow 0.3s ease, background 0.3s ease; }
+    nav.scrolled { box-shadow: 0 2px 20px rgba(28,42,68,0.08); }
+
+    /* ── Mobile menu ── */
+    #mobile-menu {
+      display: none;
+      position: fixed; top: 64px; left: 0; right: 0;
+      background: #F4F2F0;
+      border-bottom: 1px solid rgba(28,42,68,0.1);
+      z-index: 49;
+      padding: 1.5rem 1.5rem 2rem;
+      flex-direction: column; gap: 1.25rem;
+      transform: translateY(-8px);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    #mobile-menu.open {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: #1C2A44;
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* ── Sticky CTA ── */
+    #sticky-cta {
+      position: fixed; bottom: -80px; left: 0; right: 0;
+      z-index: 50;
+      transition: bottom 0.4s cubic-bezier(0.16,1,0.3,1);
+      padding: 0.875rem 1.5rem;
+      background: #1C2A44;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    #sticky-cta.visible { bottom: 0; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display: inline-block;
+      background: #1C2A44; color: #F4F2F0;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 1rem 2rem; border-radius: 4px;
+      transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 8px rgba(28,42,68,0.15);
+    }
+    .btn-primary:hover { background: #7A835E; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(28,42,68,0.2); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      display: inline-block;
+      border: 1px solid rgba(28,42,68,0.2); color: #1C2A44;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 1rem 2rem; border-radius: 4px;
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.2s ease;
+    }
+    .btn-ghost:hover { border-color: #1C2A44; background: #1C2A44; color: #F4F2F0; transform: translateY(-1px); }
+
+    /* ── Who-for cards ── */
+    .for-card {
+      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .for-card:hover { background: rgba(122,131,94,0.06); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(28,42,68,0.07); }
+
+    /* ── Method cards ── */
+    .method-card {
+      transition: border-color 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .method-card:hover { border-color: #7A835E; transform: translateY(-4px); box-shadow: 0 12px 32px rgba(28,42,68,0.08); }
+
+    /* ── Service rows ── */
+    .service-row {
+      border-bottom: 1px solid rgba(28, 42, 68, 0.1);
+      transition: background 0.3s ease;
+    }
+    .service-row:hover { background: rgba(122,131,94,0.03); }
+
+    /* ── 3F hover ── */
+    .f-block h3 {
+      transition: font-size 0.35s cubic-bezier(0.16,1,0.3,1), letter-spacing 0.35s ease;
+    }
+    .f-block:hover h3 { font-size: 1.75rem; letter-spacing: -0.03em; }
+
+    /* ── Stat counter ── */
+    .stat-number { transition: opacity 0.3s ease; }
+
+    /* ── Underline link ── */
+    .underline-link {
+      position: relative; display: inline-block;
+      text-decoration: none;
+    }
+    .underline-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1px; background: #7A835E;
+      transition: width 0.3s ease;
+    }
+    .underline-link:hover::after { width: 100%; }
+
+    /* Case grid */
+    .case-grid { display: grid; grid-template-columns: 160px 1fr; gap: 2rem; }
+    @media (max-width: 768px) { .case-grid { grid-template-columns: 1fr; gap: 0.5rem; } }
   </style>
 </head>
-<body class="bg-bg font-sans text-primary antialiased">
+<body class="font-sans">
 
-  <!-- Cookie Banner -->
-  <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 z-[60] bg-accent text-white px-6 py-4 hidden">
-    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <p class="text-sm text-gray-300">We use cookies to analyze site usage. By continuing, you agree to our <a href="#privacy" class="underline text-white">Privacy Policy</a>.</p>
-      <div class="flex gap-3 flex-shrink-0">
-        <button onclick="acceptCookies()" class="bg-white text-accent text-sm font-medium px-5 py-2 rounded hover:bg-gray-100 transition">Accept</button>
-        <button onclick="declineCookies()" class="text-sm text-gray-400 hover:text-white transition">Decline</button>
-      </div>
-    </div>
-  </div>
+  <div id="progress-bar"></div>
 
-  <!-- Navigation -->
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-bg/90 backdrop-blur-md border-b border-border">
-    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="#" class="text-lg font-semibold tracking-tight text-accent">Healthy Human Systems</a>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="#method" class="text-[13px] font-medium text-muted hover:text-accent transition">How it works?</a>
-        <a href="#cases" class="text-[13px] font-medium text-muted hover:text-accent transition">Cases</a>
-        <a href="#services" class="text-[13px] font-medium text-muted hover:text-accent transition">Services</a>
-        <a href="#about" class="text-[13px] font-medium text-muted hover:text-accent transition">About</a>
-        <a href="#insights" class="text-[13px] font-medium text-muted hover:text-accent transition">Insights</a>
-        <a href="#contact" class="text-[13px] font-medium bg-accent text-white px-5 py-2 rounded hover:bg-black transition">Book intro call</a>
+  <!-- Nav -->
+  <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 bg-linen/90 backdrop-blur-md border-b border-border">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="text-lg font-bold tracking-tight text-navy">Healthy Human Systems</a>
+      <div class="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest">
+        <a href="#method" class="text-graphite hover:text-sage transition-colors underline-link">How it works</a>
+        <a href="#for-who" class="text-graphite hover:text-sage transition-colors underline-link">Who it's for</a>
+        <a href="#cases" class="text-graphite hover:text-sage transition-colors underline-link">Cases</a>
+        <a href="#services" class="text-graphite hover:text-sage transition-colors underline-link">Services</a>
+        <a href="#about" class="text-graphite hover:text-sage transition-colors underline-link">About</a>
+        <a href="#contact" class="btn-primary">Book intro call</a>
       </div>
-      <button id="burger" class="md:hidden" onclick="toggleMenu()">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <button id="hamburger-btn" class="hamburger md:hidden flex flex-col gap-[5px] p-1" aria-label="Menu">
+        <span></span><span></span><span></span>
       </button>
-    </div>
-    <div id="mobileMenu" class="hidden md:hidden border-t border-border bg-bg px-6 pb-6">
-      <a href="#method" class="block py-3 text-sm text-muted" onclick="toggleMenu()">How it works?</a>
-      <a href="#cases" class="block py-3 text-sm text-muted" onclick="toggleMenu()">Cases</a>
-      <a href="#services" class="block py-3 text-sm text-muted" onclick="toggleMenu()">Services</a>
-      <a href="#about" class="block py-3 text-sm text-muted" onclick="toggleMenu()">About</a>
-      <a href="#insights" class="block py-3 text-sm text-muted" onclick="toggleMenu()">Insights</a>
-      <a href="#contact" class="block mt-3 text-center bg-accent text-white text-sm font-medium px-5 py-2.5 rounded" onclick="toggleMenu()">Book intro call</a>
     </div>
   </nav>
 
+  <!-- Mobile menu -->
+  <div id="mobile-menu">
+    <a href="#method" class="text-[11px] font-bold uppercase tracking-widest text-graphite hover:text-sage transition">How it works</a>
+    <a href="#for-who" class="text-[11px] font-bold uppercase tracking-widest text-graphite hover:text-sage transition">Who it's for</a>
+    <a href="#cases" class="text-[11px] font-bold uppercase tracking-widest text-graphite hover:text-sage transition">Cases</a>
+    <a href="#services" class="text-[11px] font-bold uppercase tracking-widest text-graphite hover:text-sage transition">Services</a>
+    <a href="#about" class="text-[11px] font-bold uppercase tracking-widest text-graphite hover:text-sage transition">About</a>
+    <a href="#contact" class="btn-primary text-center">Book intro call</a>
+  </div>
+
   <!-- Hero -->
-  <section class="pt-32 pb-20 md:pt-44 md:pb-28">
-    <div class="max-w-5xl mx-auto px-6">
-      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-6">Customer Success Advisory</p>
-      <h1 class="text-3xl md:text-[44px] font-bold text-accent leading-[1.15] mb-6 max-w-3xl">
-        We build retention systems<br class="hidden md:block"> that reduce churn sustainably
+  <section class="pt-32 pb-20 md:pt-48 md:pb-32">
+    <div class="max-w-6xl mx-auto px-6">
+      <p class="hero-line text-[12px] font-bold text-sage uppercase tracking-[0.3em] mb-6">Customer Success Advisory</p>
+      <h1 class="mb-8 tracking-tighter">
+        <span class="hero-line block text-4xl md:text-6xl font-bold text-navy leading-none" style="transition-delay:100ms">We build retention systems</span>
+        <span class="hero-line block text-4xl md:text-6xl font-bold text-navy leading-none" style="transition-delay:220ms">that reduce churn sustainably</span>
       </h1>
-      <p class="text-lg text-muted max-w-2xl mb-10 leading-relaxed">
+      <p class="hero-line text-lg text-graphite/80 max-w-2xl mb-12 leading-relaxed font-light italic" style="transition-delay:340ms">
         Structured intervention for B2B companies at growth, scale, and enterprise stages. We design, implement, and measure customer success operations that protect recurring revenue.
       </p>
-      <div class="flex flex-col sm:flex-row gap-3">
-        <a href="#assessment" class="inline-flex items-center justify-center bg-accent text-white text-sm font-medium px-7 py-3 rounded hover:bg-black transition">Take the self-assessment</a>
-        <a href="#contact" class="inline-flex items-center justify-center border border-border text-sm font-medium px-7 py-3 rounded hover:border-accent transition">Book a 30-min intro call</a>
+      <div class="hero-line flex flex-wrap gap-4" style="transition-delay:460ms">
+        <a href="#contact" class="btn-primary">Book intro call</a>
+        <a href="#method" class="btn-ghost">See how it works</a>
       </div>
     </div>
   </section>
 
-  <!-- Credibility bar -->
-  <section class="border-y border-border py-10">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+  <!-- Stats -->
+  <section class="border-y border-border py-12 bg-white/30">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 stagger-children">
         <div>
-          <p class="text-2xl font-bold text-accent">15</p>
-          <p class="text-xs text-muted mt-1 uppercase tracking-wide"> TEch/OPS/communication experience</p>
+          <p class="text-3xl font-bold text-navy stat-number" data-target="15" data-suffix="">0</p>
+          <p class="text-[10px] text-sage font-bold uppercase tracking-widest mt-1 italic">Tech/OPS/Comm Experience</p>
         </div>
         <div>
-          <p class="text-2xl font-bold text-accent">50+</p>
-          <p class="text-xs text-muted mt-1 uppercase tracking-wide">CS transformations</p>
+          <p class="text-3xl font-bold text-navy stat-number" data-target="50" data-suffix="+">0</p>
+          <p class="text-[10px] text-sage font-bold uppercase tracking-widest mt-1 italic">CS Transformations</p>
         </div>
         <div>
-          <p class="text-2xl font-bold text-accent">B2B</p>
-          <p class="text-xs text-muted mt-1 uppercase tracking-wide">hight touch</p>
+          <p class="text-3xl font-bold text-navy">B2B</p>
+          <p class="text-[10px] text-sage font-bold uppercase tracking-widest mt-1 italic">High Touch</p>
         </div>
         <div>
-          <p class="text-2xl font-bold text-accent">EMEA</p>
-          <p class="text-xs text-muted mt-1 uppercase tracking-wide">& CIS markets</p>
+          <p class="text-3xl font-bold text-navy">EMEA</p>
+          <p class="text-[10px] text-sage font-bold uppercase tracking-widest mt-1 italic">& CIS Markets</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who it's for -->
+  <section id="for-who" class="py-24 bg-white/40">
+    <div class="max-w-6xl mx-auto px-6">
+      <p class="reveal text-xs font-bold text-sage uppercase tracking-widest mb-4">Who it's for</p>
+      <h2 class="reveal text-3xl font-bold text-navy mb-14 tracking-tight" style="transition-delay:80ms">Built for B2B teams who outgrew intuition</h2>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-0 border border-border stagger-children">
+        <div class="for-card p-8 border-b md:border-b lg:border-b-0 md:border-r border-border">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-4">Profile 01</p>
+          <h3 class="text-base font-bold text-navy mb-3 tracking-tight">Series A–B SaaS</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">You've found product-market fit. Now churn is eating your growth. You need a CS function, not just a CS manager.</p>
+        </div>
+        <div class="for-card p-8 border-b lg:border-b-0 lg:border-r border-border">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-4">Profile 02</p>
+          <h3 class="text-base font-bold text-navy mb-3 tracking-tight">Scale-up with CS debt</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">You have a CS team but no playbook. Everyone does things differently. Retention is unpredictable and expansion is accidental.</p>
+        </div>
+        <div class="for-card p-8 border-b md:border-b-0 md:border-r border-border">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-4">Profile 03</p>
+          <h3 class="text-base font-bold text-navy mb-3 tracking-tight">MedTech & BioTech</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">You understand compliance and traceability. You want the same rigor applied to customer operations and revenue predictability.</p>
+        </div>
+        <div class="for-card p-8">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-4">Profile 04</p>
+          <h3 class="text-base font-bold text-navy mb-3 tracking-tight">Enterprise in transition</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">You're restructuring CS after a pivot, merger, or leadership change. You need a senior practitioner who can move fast without breaking things.</p>
+        </div>
+      </div>
+
+      <div class="mt-10 pt-8 border-t border-border reveal">
+        <p class="text-sm text-graphite/60 italic">Not sure if this applies to you?
+          <a href="#contact" class="text-navy font-semibold hover:text-sage transition underline-link">Book a 30-min call</a> — we'll tell you honestly.
+        </p>
       </div>
     </div>
   </section>
 
   <!-- Method -->
-  <section id="method" class="py-20 md:py-28">
-    <div class="max-w-5xl mx-auto px-6">
-      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">How it works?</p>
-      <h2 class="text-2xl md:text-3xl font-bold text-accent mb-4 max-w-2xl">Systematic, not experimental</h2>
-      <p class="text-muted max-w-2xl mb-14 leading-relaxed">Every engagement follows a four-phase methodology. We diagnose before we prescribe. We measure before we declare success.</p>
-
-      <div class="grid md:grid-cols-4 gap-px bg-border rounded-lg overflow-hidden">
-        <div class="bg-surface p-8">
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 1</p>
-          <h3 class="text-base font-bold text-accent mb-2">Diagnostic</h3>
-          <p class="text-sm text-muted leading-relaxed">Process audit, churn analysis, stakeholder interviews, metric baseline.</p>
+  <section id="method" class="py-24">
+    <div class="max-w-6xl mx-auto px-6">
+      <p class="reveal text-xs font-bold text-sage uppercase tracking-widest mb-4">How it works</p>
+      <h2 class="reveal text-3xl font-bold text-navy mb-14 tracking-tight" style="transition-delay:80ms">Systematic, not experimental</h2>
+      <div class="grid md:grid-cols-4 gap-4 stagger-children">
+        <div class="method-card bg-white p-8 border border-border slide-left">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-6">Phase 1</p>
+          <h3 class="text-base font-bold text-navy mb-4">Diagnostic</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">Process audit, churn analysis, stakeholder interviews, metric baseline.</p>
         </div>
-        <div class="bg-surface p-8">
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 2</p>
-          <h3 class="text-base font-bold text-accent mb-2">Design</h3>
-          <p class="text-sm text-muted leading-relaxed">Journey mapping, playbook architecture, team structure, tooling selection.</p>
+        <div class="method-card bg-white p-8 border border-border slide-left" style="transition-delay:100ms">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-6">Phase 2</p>
+          <h3 class="text-base font-bold text-navy mb-4">Design</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">Journey mapping, playbook architecture, team structure, tooling selection.</p>
         </div>
-        <div class="bg-surface p-8">
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 3</p>
-          <h3 class="text-base font-bold text-accent mb-2">Implementation</h3>
-          <p class="text-sm text-muted leading-relaxed">Rollout, team coaching, process integration, early warning system setup.</p>
+        <div class="method-card bg-white p-8 border border-border slide-left" style="transition-delay:200ms">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-6">Phase 3</p>
+          <h3 class="text-base font-bold text-navy mb-4">Implementation</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">Rollout, team coaching, process integration, early warning system setup.</p>
         </div>
-        <div class="bg-surface p-8">
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Phase 4</p>
-          <h3 class="text-base font-bold text-accent mb-2">Measurement</h3>
-          <p class="text-sm text-muted leading-relaxed">KPI tracking, iteration cycles, quarterly business review cadence.</p>
+        <div class="method-card bg-white p-8 border border-border slide-left" style="transition-delay:300ms">
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-6">Phase 4</p>
+          <h3 class="text-base font-bold text-navy mb-4">Measurement</h3>
+          <p class="text-sm text-graphite/70 leading-relaxed">KPI tracking, iteration cycles, quarterly business review cadence.</p>
         </div>
       </div>
     </div>
   </section>
 
- <style>
-  .cases-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-  }
+  <!-- Cases / 3F -->
+  <section id="cases" class="py-24 bg-navy text-linen">
+    <div class="max-w-6xl mx-auto px-6">
+      <p class="reveal text-xs font-bold text-sage uppercase tracking-widest mb-4 italic">Case Studies</p>
+      <h2 class="reveal text-3xl font-bold mb-16 tracking-tight" style="transition-delay:80ms">Structured interventions, measured outcomes</h2>
 
-  .case-card {
-    padding: 2.5rem 2rem 2.5rem 0;
-    border-right: 1px solid #e5e5e5;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
+      <div class="mb-20 pb-16 border-b border-linen/10">
+        <p class="reveal text-[10px] font-bold text-sage uppercase tracking-widest mb-8">Origin of Framework</p>
+        <div class="case-grid reveal">
+          <p class="text-xs font-bold text-sage uppercase tracking-widest">The Origin of 3F</p>
+          <div class="text-sm text-linen/80 leading-relaxed space-y-4">
+            <p>Compliance-driven industries such as MedTech and Biotech use two core instruments to build stable business systems:</p>
+            <p class="border-l border-sage pl-4 font-medium italic">Predictability — outcomes can be reproduced.<br>Traceability — decisions and results are linked through data and clear cause-and-effect logic.</p>
+            <p>These mechanisms transform complexity into a measurable and manageable system. Applied to SaaS, they redefine Customer Success as a structured, evidence-based discipline. When causes are visible and measurable, churn, retention, revenue growth, and expansion stop being assumptions. They become operational variables that can be diagnosed and managed.</p>
+          </div>
+        </div>
+      </div>
 
-  .case-card:not(:first-child) {
-    padding-left: 2rem;
-  }
-
-  .case-card:last-child {
-    border-right: none;
-  }
-
-  .case-title {
-    transition: font-size 0.3s ease;
-  }
-
-  .case-card:hover .case-title {
-    font-size: 1.6rem;
-  }
-
-  .case-row-item {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  @media (max-width: 900px) {
-    .cases-row {
-      grid-template-columns: 1fr;
-    }
-    .case-card {
-      border-right: none;
-      border-bottom: 1px solid #e5e5e5;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-  }
-</style>
-
-<style>
-  .cases-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-  }
-
-  .case-card {
-    padding: 2.5rem 2rem 2.5rem 0;
-    border-right: 1px solid #e5e5e5;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .case-card:not(:first-child) {
-    padding-left: 2rem;
-  }
-
-  .case-card:last-child {
-    border-right: none;
-  }
-
-  .case-title {
-    transition: font-size 0.3s ease;
-  }
-
-  .case-card:hover .case-title {
-    font-size: 1.6rem;
-  }
-
-  .case-row-item {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  @media (max-width: 900px) {
-    .cases-row {
-      grid-template-columns: 1fr;
-    }
-    .case-card {
-      border-right: none;
-      border-bottom: 1px solid #e5e5e5;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-  }
-</style>
-
-<section id="cases" class="py-20 md:py-28 bg-surface border-y border-border">
-  <div class="max-w-5xl mx-auto px-6">
-
-    <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Case studies</p>
-    <h2 class="text-2xl md:text-3xl font-bold text-accent mb-10">Structured interventions, measured outcomes</h2>
-
-    <!-- Origin of Framework -->
-    <div class="mb-12 pb-12 border-b border-border">
-      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-6">Origin of Framework</p>
-      <div class="case-grid">
-        <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">The Origin of 3F</p>
-        <p class="text-sm text-accent leading-relaxed">
-          Compliance-driven industries such as MedTech and Biotech use two core instruments to build stable business systems:<br><br>
-          Predictability — outcomes can be reproduced.<br>
-          Traceability — decisions and results are linked through data and clear cause-and-effect logic.<br><br>
-          These mechanisms transform complexity into a measurable and manageable system.
-          Applied to SaaS, they redefine Customer Success as a structured, evidence-based discipline.
-          When causes are visible and measurable, churn, retention, revenue growth, and expansion stop being assumptions.
-          They become operational variables that can be diagnosed and managed.
-        </p>
+      <div class="grid md:grid-cols-3 gap-12 stagger-children">
+        <div class="f-block">
+          <h3 class="text-2xl font-bold text-sage uppercase tracking-tighter mb-2">01 — Foundation</h3>
+          <p class="text-[10px] text-linen/40 uppercase tracking-widest mb-6">Value Architecture</p>
+          <p class="text-xs font-bold text-linen/60 uppercase mb-2">Core Question</p>
+          <p class="text-sm italic font-medium">"What client problem are we solving?"</p>
+        </div>
+        <div class="f-block">
+          <h3 class="text-2xl font-bold text-sage uppercase tracking-tighter mb-2">02 — Function</h3>
+          <p class="text-[10px] text-linen/40 uppercase tracking-widest mb-6">Operational Delivery</p>
+          <p class="text-xs font-bold text-linen/60 uppercase mb-2">Core Question</p>
+          <p class="text-sm italic font-medium">"Is the company consistently delivering this value?"</p>
+        </div>
+        <div class="f-block">
+          <h3 class="text-2xl font-bold text-sage uppercase tracking-tighter mb-2">03 — Flow</h3>
+          <p class="text-[10px] text-linen/40 uppercase tracking-widest mb-6">Adoption & Behavior</p>
+          <p class="text-xs font-bold text-linen/60 uppercase mb-2">Core Question</p>
+          <p class="text-sm italic font-medium">"Is the value embedded in real behavior?"</p>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- Three blocks -->
-    <div class="cases-row">
+  <!-- Services -->
+  <section id="services" class="py-24">
+    <div class="max-w-6xl mx-auto px-6">
+      <p class="reveal text-[11px] font-bold text-sage uppercase tracking-[0.3em] mb-16">Service Catalog</p>
+      <div class="space-y-20">
 
-      <!-- 01 — Foundation -->
-      <div class="case-card">
-        <div>
-          <h2 class="case-title text-xl font-bold text-accent uppercase tracking-tighter">01 — Foundation</h2>
-          <p class="text-sm text-muted opacity-80 uppercase tracking-widest mt-1">Value Architecture</p>
+        <div class="service-row pb-12 reveal">
+          <div class="flex flex-col md:flex-row md:items-baseline gap-4 mb-8">
+            <h3 class="text-3xl font-bold text-navy tracking-tight">01 — CS Audit</h3>
+            <span class="text-[10px] font-mono font-bold text-sage bg-sage/10 px-2 py-1">[ F1 + F2 + F3 ]</span>
+          </div>
+          <div class="grid md:grid-cols-[1fr_280px] gap-12">
+            <div class="text-sm text-graphite/80 leading-relaxed">
+              Diagnostic of the CS function based on high-regulation environment standards. Identification of revenue security gaps and operational bottlenecks.
+              <p class="mt-6 text-xs font-bold text-navy uppercase italic">Timeline: From 2 weeks</p>
+            </div>
+            <div class="bg-white p-6 border-l-2 border-sage shadow-sm">
+              <p class="text-[10px] font-bold text-navy uppercase tracking-widest mb-4">Artifacts</p>
+              <ul class="text-[13px] text-graphite space-y-2 font-medium">
+                <li>• Audit Report</li>
+                <li>• Gap Analysis (Benchmarks)</li>
+                <li>• Wardley Strategy Map</li>
+                <li>• CS Journey Map</li>
+                <li>• Quick-wins list</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div class="case-row-item">
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Core question</p>
-          <p class="text-sm text-accent font-medium italic">"What client problem are we solving?"</p>
+
+        <div class="service-row pb-12 reveal">
+          <div class="flex flex-col md:flex-row md:items-baseline gap-4 mb-8">
+            <h3 class="text-3xl font-bold text-navy tracking-tight">02 — CS Playbook Build</h3>
+            <span class="text-[10px] font-mono font-bold text-sage bg-sage/10 px-2 py-1">[ F1 + F2 ]</span>
+          </div>
+          <div class="grid md:grid-cols-[1fr_280px] gap-12">
+            <div class="text-sm text-graphite/80 leading-relaxed">
+              Design and documentation of operational standards. Creation of a structural framework to ensure CSM scalability and predictable delivery.
+              <p class="mt-6 text-xs font-bold text-navy uppercase italic">Timeline: Defined after Audit</p>
+            </div>
+            <div class="bg-white p-6 border-l-2 border-sage shadow-sm">
+              <p class="text-[10px] font-bold text-navy uppercase tracking-widest mb-4">Artifacts</p>
+              <ul class="text-[13px] text-graphite space-y-2 font-medium">
+                <li>• CS Process Design</li>
+                <li>• Standard Operating Playbooks</li>
+                <li>• Metrics Framework (KPI/OKRs)</li>
+              </ul>
+            </div>
+          </div>
         </div>
+
+        <div class="service-row pb-12 reveal">
+          <div class="flex flex-col md:flex-row md:items-baseline gap-4 mb-8">
+            <h3 class="text-3xl font-bold text-navy tracking-tight">03 — Fractional Head of CS</h3>
+            <span class="text-[10px] font-mono font-bold text-sage bg-sage/10 px-2 py-1">[ F1 + F2 + F3 ]</span>
+          </div>
+          <div class="grid md:grid-cols-[1fr_280px] gap-12">
+            <div class="text-sm text-graphite/80 leading-relaxed">
+              Strategic management of the CS function. Provision of senior leadership and oversight on a rolling retainer basis.
+              <p class="mt-6 text-xs font-bold text-navy uppercase italic">Timeline: 3-month min. commitment</p>
+            </div>
+            <div class="bg-white p-6 border-l-2 border-sage shadow-sm">
+              <p class="text-[10px] font-bold text-navy uppercase tracking-widest mb-4">Artifacts</p>
+              <ul class="text-[13px] text-graphite space-y-2 font-medium">
+                <li>• Defined post-audit roadmap</li>
+                <li>• Strategic function management</li>
+                <li>• Operational leadership</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-row pb-12 reveal">
+          <div class="flex flex-col md:flex-row md:items-baseline gap-4 mb-8">
+            <h3 class="text-3xl font-bold text-navy tracking-tight">04 — CS Workshops</h3>
+            <span class="text-[10px] font-mono font-bold text-sage bg-sage/10 px-2 py-1">[ F2 + F3 ]</span>
+          </div>
+          <div class="grid md:grid-cols-[1fr_280px] gap-12">
+            <div class="text-sm text-graphite/80 leading-relaxed">
+              Targeted training sessions for internal SaaS teams and product leadership focusing on critical CS competencies.
+              <p class="mt-6 text-xs font-bold text-navy uppercase italic">Timeline: Series of 1-hour sessions</p>
+            </div>
+            <div class="bg-white p-6 border-l-2 border-sage shadow-sm">
+              <p class="text-[10px] font-bold text-navy uppercase tracking-widest mb-4">Artifacts</p>
+              <ul class="text-[13px] text-graphite space-y-2 font-medium">
+                <li>• Training materials</li>
+                <li>• Competency assessment</li>
+                <li>• Post-session action plans</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
       </div>
-
-      <!-- 02 — Function -->
-      <div class="case-card">
-        <div>
-          <h2 class="case-title text-xl font-bold text-accent uppercase tracking-tighter">02 — Function</h2>
-          <p class="text-sm text-muted opacity-80 uppercase tracking-widest mt-1">Operational Delivery</p>
-        </div>
-        <div class="case-row-item">
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Core question</p>
-          <p class="text-sm text-accent font-medium italic">"Is the company consistently delivering this value?"</p>
-        </div>
-      </div>
-
-      <!-- 03 — Flow -->
-      <div class="case-card">
-        <div>
-          <h2 class="case-title text-xl font-bold text-accent uppercase tracking-tighter">03 — Flow</h2>
-          <p class="text-sm text-muted opacity-80 uppercase tracking-widest mt-1">Adoption & Behavior</p>
-        </div>
-        <div class="case-row-item">
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest pt-1">Core question</p>
-          <p class="text-sm text-accent font-medium italic">"Is the value embedded in real behavior?"</p>
-        </div>
-      </div>
-
     </div>
-  </div>
-</section>
+  </section>
 
-  <section id="services" class="py-20 md:py-28">
-  <div class="max-w-4xl mx-auto px-6">
-    <p class="text-[11px] font-bold text-muted uppercase tracking-[0.3em] mb-12">Service Catalog</p>
-    
-    <div class="space-y-16">
-      
-      <div class="group border-b border-border pb-10">
-        <div class="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-4">
-          <h3 class="text-2xl font-bold text-white tracking-tighter transition-transform duration-300 group-hover:scale-[1.02] origin-left">
-            01 — CS Audit
-          </h3>
-          <span class="text-xs text-muted font-mono">[ F1 + F2 + F3 ]</span>
-        </div>
-        
-        <div class="grid md:grid-cols-[1fr_240px] gap-8">
-          <div class="text-sm text-accent leading-relaxed">
-            Diagnostic of the CS function based on high-regulation environment standards. Identification of revenue security gaps and operational bottlenecks.
-            <p class="mt-4 text-muted">Timeline: From 2 weeks</p>
-          </div>
-          <div class="space-y-2">
-            <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Artifacts</p>
-            <ul class="text-[13px] text-accent/80 space-y-1">
-              <li>• Audit Report</li>
-              <li>• Gap Analysis (Benchmarks)</li>
-              <li>• Wardley Strategy Map</li>
-              <li>• CS Journey Map</li>
-              <li>• Quick-wins list</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="group border-b border-border pb-10">
-        <div class="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-4">
-          <h3 class="text-2xl font-bold text-white tracking-tighter transition-transform duration-300 group-hover:scale-[1.02] origin-left">
-            02 — CS Playbook Build
-          </h3>
-          <span class="text-xs text-muted font-mono">[ F1 + F2 ]</span>
-        </div>
-        
-        <div class="grid md:grid-cols-[1fr_240px] gap-8">
-          <div class="text-sm text-accent leading-relaxed">
-            Design and documentation of operational standards. Creation of a structural framework to ensure CSM scalability and predictable delivery.
-            <p class="mt-4 text-muted">Timeline: Defined after Audit</p>
-          </div>
-          <div class="space-y-2">
-            <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Artifacts</p>
-            <ul class="text-[13px] text-accent/80 space-y-1">
-              <li>• CS Process Design</li>
-              <li>• Standard Operating Playbooks</li>
-              <li>• Key Metrics Framework (KPI/OKRs)</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="group border-b border-border pb-10">
-        <div class="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-4">
-          <h3 class="text-2xl font-bold text-white tracking-tighter transition-transform duration-300 group-hover:scale-[1.02] origin-left">
-            03 — Fractional Head of CS
-          </h3>
-          <span class="text-xs text-muted font-mono">[ F1 + F2 + F3 ]</span>
-        </div>
-        
-        <div class="grid md:grid-cols-[1fr_240px] gap-8">
-          <div class="text-sm text-accent leading-relaxed">
-            Strategic management of the CS function. Provision of senior leadership and oversight on a rolling retainer basis.
-            <p class="mt-4 text-muted">Timeline: 3-month minimum commitment</p>
-          </div>
-          <div class="space-y-2">
-            <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Artifacts</p>
-            <ul class="text-[13px] text-accent/80 space-y-1">
-              <li>• Defined post-audit roadmap</li>
-              <li>• Strategic function management</li>
-              <li>• Operational leadership</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="group border-b border-border pb-10">
-        <div class="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-4">
-          <h3 class="text-2xl font-bold text-white tracking-tighter transition-transform duration-300 group-hover:scale-[1.02] origin-left">
-            04 — CS Workshops
-          </h3>
-          <span class="text-xs text-muted font-mono">[ F2 + F3 ]</span>
-        </div>
-        
-        <div class="grid md:grid-cols-[1fr_240px] gap-8">
-          <div class="text-sm text-accent leading-relaxed">
-            Targeted training sessions for internal SaaS teams and product leadership focusing on critical CS competencies.
-            <p class="mt-4 text-muted">Timeline: Series of 1-hour sessions</p>
-          </div>
-          <div class="space-y-2">
-            <p class="text-[10px] font-bold text-muted uppercase tracking-widest">Artifacts</p>
-            <ul class="text-[13px] text-accent/80 space-y-1">
-              <li>• Training materials</li>
-              <li>• Competency assessment</li>
-              <li>• Post-session action plans</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-  <!-- Self-Assessment (Lead Magnet) -->
-  <section id="assessment" class="py-20 md:py-28 bg-surface border-y border-border">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="max-w-xl mx-auto text-center">
-        <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Free resource</p>
-        <h2 class="text-2xl md:text-3xl font-bold text-accent mb-4">CS Maturity Self-Assessment</h2>
-        <p class="text-muted mb-8 leading-relaxed">A structured diagnostic to evaluate your current customer success operations. Understand where you stand across 6 key dimensions: process, people, tooling, metrics, culture, and executive alignment.</p>
-        <form id="assessmentForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="handleAssessment(event)">
-          <input type="email" required placeholder="Work email" class="flex-1 border border-border rounded px-4 py-3 text-sm focus:outline-none focus:border-accent transition bg-white">
-          <button type="submit" class="bg-accent text-white text-sm font-medium px-6 py-3 rounded hover:bg-black transition whitespace-nowrap">Get the guide</button>
-        </form>
-        <p class="text-xs text-subtle mt-4">No spam. Unsubscribe anytime. We respect your data.</p>
-      </div>
+  <!-- Assessment -->
+  <section id="assessment" class="py-24 bg-white border-y border-border">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <p class="reveal text-xs font-bold text-sage uppercase tracking-widest mb-6 italic">Free Resource</p>
+      <h2 class="reveal text-3xl font-bold text-navy mb-6 tracking-tight" style="transition-delay:80ms">CS Maturity Self-Assessment</h2>
+      <p class="reveal text-graphite/70 mb-10 leading-relaxed max-w-xl mx-auto" style="transition-delay:160ms">A structured diagnostic to evaluate your current customer success operations across 6 key dimensions: process, people, tooling, metrics, culture, and executive alignment.</p>
+      <form class="reveal flex flex-col sm:flex-row gap-2 max-w-md mx-auto" style="transition-delay:240ms">
+        <input type="email" placeholder="Work email" class="flex-1 border border-border bg-linen/30 rounded px-6 py-4 text-sm focus:outline-none focus:border-sage transition-colors">
+        <button class="btn-primary whitespace-nowrap">Get the guide</button>
+      </form>
     </div>
   </section>
 
   <!-- About -->
-  <section id="about" class="py-20 md:py-28">
-    <div class="max-w-5xl mx-auto px-6">
-      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Who we are</p>
-      <h2 class="text-2xl md:text-3xl font-bold text-accent mb-14">Practitioners, not theorists</h2>
-
-      <div class="grid md:grid-cols-2 gap-12">
+  <section id="about" class="py-24">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
         <div>
-          <div class="w-14 h-14 rounded bg-highlight flex items-center justify-center text-accent text-sm font-bold mb-5">MV</div>
-          <h3 class="text-lg font-bold text-accent mb-1">Anastasia Pozdniakowa</h3>
-          <p class="text-sm text-muted mb-4">Founder</p>
-          <div class="space-y-2 text-sm text-muted leading-relaxed">
-            <p>10+ years Tech Ops & Project Management  CSM in B2B SaaS, MedTech & BioTech</p>
+          <p class="reveal text-xs font-bold text-sage uppercase tracking-widest mb-4">Who we are</p>
+          <h2 class="reveal text-3xl font-bold text-navy mb-8 tracking-tight" style="transition-delay:80ms">Practitioners, not theorists</h2>
+          <div class="reveal space-y-4 text-sm text-graphite/80 leading-relaxed" style="transition-delay:160ms">
+            <p>10+ years Tech Ops & Project Management | CSM in B2B SaaS, MedTech & BioTech</p>
             <p>Advisor & facilitator for global teams | Soft-skills mentor.</p>
           </div>
         </div>
-        <div>
-    
-  </section>
-
-  <!-- Insights -->
-  <section id="insights" class="py-20 md:py-28 bg-surface border-y border-border">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="flex items-end justify-between mb-14">
-        <div>
-          <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Insights</p>
-          <h2 class="text-2xl md:text-3xl font-bold text-accent">Thinking on retention</h2>
+        <div class="reveal bg-navy p-12 rounded shadow-2xl">
+          <div class="w-16 h-16 bg-sage/20 border border-sage/40 rounded flex items-center justify-center text-sage font-bold text-xl mb-6">AP</div>
+          <p class="text-xl font-bold text-linen mb-1">Anastasia Pozdniakowa</p>
+          <p class="text-xs font-bold text-sage uppercase tracking-widest mb-6">Founder</p>
+          <a href="https://www.linkedin.com/in/anastasiapozdniakowa" target="_blank" class="text-linen/60 hover:text-sage text-xs uppercase font-bold tracking-widest transition underline-link">LinkedIn Profile →</a>
         </div>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
-        <a href="#" class="bg-bg p-8 group">
-          <p class="text-xs text-muted uppercase tracking-widest mb-3">Analysis</p>
-          <h3 class="text-base font-bold text-accent mb-2 group-hover:underline">Why onboarding is a retention problem, not a product problem</h3>
-          <p class="text-sm text-muted">Most churn decisions are made in the first 30 days. Here is what to measure and what to change.</p>
-        </a>
-        <a href="#" class="bg-bg p-8 group">
-          <p class="text-xs text-muted uppercase tracking-widest mb-3">Framework</p>
-          <h3 class="text-base font-bold text-accent mb-2 group-hover:underline">The 4 signals that predict churn 90 days before it happens</h3>
-          <p class="text-sm text-muted">A practical health scoring model for B2B SaaS with under 500 customers.</p>
-        </a>
-        <a href="#" class="bg-bg p-8 group">
-          <p class="text-xs text-muted uppercase tracking-widest mb-3">Operations</p>
-          <h3 class="text-base font-bold text-accent mb-2 group-hover:underline">When to hire your first CSM: the founder transition playbook</h3>
-          <p class="text-sm text-muted">Structured approach to moving from founder-led CS to a scalable team model.</p>
-        </a>
       </div>
     </div>
   </section>
 
-  <!-- Lead Funnel: Book Intro Call -->
-  <section id="contact" class="py-20 md:py-28">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="max-w-xl mx-auto text-center">
-        <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-4">Next step</p>
-        <h2 class="text-2xl md:text-3xl font-bold text-accent mb-4">Book a 30-minute intro call</h2>
-        <p class="text-muted mb-8 leading-relaxed">No pitch, no pressure. We listen to your situation, ask diagnostic questions, and tell you honestly whether we can help. If there is a fit, we follow up with a tailored audit proposal.</p>
-
-        <!-- Calendly embed placeholder -->
-        <div class="border border-border rounded-lg p-10 mb-6 bg-surface">
-          <p class="text-sm text-muted mb-4">Select a time that works for you</p>
-          <!-- Replace with: <div class="calendly-inline-widget" data-url="https://calendly.com/YOUR_LINK" style="min-width:320px;height:630px;"></div> -->
-          <a href="https://calendly.com/" target="_blank" class="inline-flex items-center justify-center bg-accent text-white text-sm font-medium px-7 py-3 rounded hover:bg-black transition">Open scheduling page</a>
-        </div>
-
-        <p class="text-sm text-muted">Or email directly: <a href="mailto:anastasiapozdniakowa@gmail.com" class="text-accent underline">anastasiapozdniakowa@gmail.com</a></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Funnel overview (hidden section for reference) -->
-  <section class="py-16 border-t border-border">
-    <div class="max-w-5xl mx-auto px-6">
-      <p class="text-[13px] font-medium text-muted uppercase tracking-widest mb-8">How we work together</p>
-      <div class="funnel-list space-y-4 max-w-lg">
-        <div class="funnel-step flex items-center gap-4">
-          <span class="text-sm text-muted">Take the self-assessment or download a guide</span>
-        </div>
-        <div class="funnel-step flex items-center gap-4">
-          <span class="text-sm text-muted">Receive a structured diagnostic summary</span>
-        </div>
-        <div class="funnel-step flex items-center gap-4">
-          <span class="text-sm text-muted">Book a 30-minute intro call</span>
-        </div>
-        <div class="funnel-step flex items-center gap-4">
-          <span class="text-sm text-muted">We deliver a tailored audit proposal</span>
-        </div>
-        <div class="funnel-step flex items-center gap-4">
-          <span class="text-sm text-muted">Engagement begins</span>
-        </div>
+  <!-- Contact -->
+  <section id="contact" class="py-24 bg-navy text-linen">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <p class="reveal text-xs font-bold text-sage uppercase tracking-widest mb-6">Get in touch</p>
+      <h2 class="reveal text-4xl font-bold mb-6 tracking-tight" style="transition-delay:80ms">Ready to start?</h2>
+      <p class="reveal text-linen/60 mb-12 leading-relaxed max-w-xl mx-auto" style="transition-delay:160ms">Book a free 30-min call. We'll map your biggest CS gap and tell you honestly if we can help.</p>
+      <div class="reveal flex flex-col sm:flex-row justify-center gap-4" style="transition-delay:240ms">
+        <a href="#" class="btn-primary" style="background:#7A835E">Book intro call</a>
+        <a href="mailto:anastasiapozdniakowa@gmail.com" class="btn-ghost" style="border-color:rgba(244,242,240,0.2);color:#F4F2F0">Email Directly</a>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="border-t border-border py-12">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="grid md:grid-cols-3 gap-8 mb-10">
+  <footer class="py-20 border-t border-border bg-linen/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid md:grid-cols-3 gap-16 mb-16">
         <div>
-          <p class="text-sm font-semibold text-accent mb-3">Healthy Human Systems</p>
-          <p class="text-sm text-muted leading-relaxed">Customer Success advisory for B2B companies that take retention seriously.</p>
+          <p class="text-sm font-bold text-navy uppercase tracking-widest mb-4">Healthy Human Systems</p>
+          <p class="text-xs text-graphite/60 leading-relaxed">Customer Success advisory for B2B companies that take retention seriously.</p>
         </div>
         <div>
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Navigation</p>
-          <div class="space-y-2">
-            <a href="#method" class="block text-sm text-muted hover:text-accent transition">Method</a>
-            <a href="#cases" class="block text-sm text-muted hover:text-accent transition">Cases</a>
-            <a href="#services" class="block text-sm text-muted hover:text-accent transition">Services</a>
-            <a href="#about" class="block text-sm text-muted hover:text-accent transition">About</a>
-            <a href="#insights" class="block text-sm text-muted hover:text-accent transition">Insights</a>
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-4">Navigation</p>
+          <div class="flex flex-col gap-2 text-xs font-medium text-graphite/80">
+            <a href="#method" class="hover:text-navy transition underline-link">How it works</a>
+            <a href="#for-who" class="hover:text-navy transition underline-link">Who it's for</a>
+            <a href="#cases" class="hover:text-navy transition underline-link">Cases</a>
+            <a href="#services" class="hover:text-navy transition underline-link">Services</a>
+            <a href="#about" class="hover:text-navy transition underline-link">About</a>
           </div>
         </div>
         <div>
-          <p class="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Connect</p>
-          <div class="space-y-2">
-            <a href="mailto:anastasiapozdniakowa@gmail.com" class="block text-sm text-muted hover:text-accent transition">anastasiapozdniakowa@gmail.com</a>
-            <a href="https://www.linkedin.com/in/anastasiapozdniakowa" target="_blank" class="block text-sm text-muted hover:text-accent transition">LinkedIn</a>
-            <a href="https://t.me/Zanzibar020" target="_blank" class="block text-sm text-muted hover:text-accent transition">Telegram</a>
+          <p class="text-[10px] font-bold text-sage uppercase tracking-widest mb-4">Connect</p>
+          <div class="flex flex-col gap-2 text-xs font-medium text-graphite/80">
+            <a href="mailto:anastasiapozdniakowa@gmail.com" class="hover:text-navy transition underline-link">anastasiapozdniakowa@gmail.com</a>
+            <a href="https://t.me/Zanzibar020" target="_blank" class="hover:text-navy transition underline-link">Telegram</a>
           </div>
         </div>
       </div>
-      <div class="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p class="text-xs text-subtle">&copy; 2026 Healthy Human Systems. All rights reserved.</p>
-        <div class="flex gap-6">
-          <a href="#privacy" class="text-xs text-subtle hover:text-muted transition">Privacy Policy</a>
-          <a href="#terms" class="text-xs text-subtle hover:text-muted transition">Terms of Service</a>
-        </div>
-      </div>
+      <p class="text-[10px] font-bold text-graphite/30 uppercase tracking-[0.2em]">© 2026 Healthy Human Systems. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- Privacy Policy -->
-  <section id="privacy" class="py-20 border-t border-border hidden">
-    <div class="max-w-3xl mx-auto px-6">
-      <h2 class="text-2xl font-bold text-accent mb-6">Privacy Policy</h2>
-      <div class="prose prose-sm text-muted">
-        <p>Last updated: February 2026</p>
-        <p>We collect only the data you provide (email address, name) through our forms. We use this data solely to respond to your inquiry and, with your consent, send educational content. We do not sell or share your data with third parties. You may request deletion of your data at any time by emailing anastasiapozdniakowa@gmail.com. We use analytics cookies to understand site usage — you can opt out via the cookie banner.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Terms -->
-  <section id="terms" class="py-20 border-t border-border hidden">
-    <div class="max-w-3xl mx-auto px-6">
-      <h2 class="text-2xl font-bold text-accent mb-6">Terms of Service</h2>
-      <div class="prose prose-sm text-muted">
-        <p>Last updated: February 2026</p>
-        <p>This website is provided for informational purposes. All content is the intellectual property of Healthy Human Systems. Service agreements are governed by individual contracts. Results described in case studies are specific to each engagement and are not guaranteed.</p>
-      </div>
-    </div>
-  </section>
+  <!-- Sticky CTA -->
+  <div id="sticky-cta">
+    <p class="text-linen text-xs font-bold uppercase tracking-widest hidden sm:block">Ready to reduce churn?</p>
+    <a href="#contact" class="btn-primary ml-auto" style="background:#7A835E; box-shadow:none;">Book intro call</a>
+  </div>
 
   <script>
-    function toggleMenu() {
-      document.getElementById('mobileMenu').classList.toggle('hidden');
-    }
+    // ── Intersection Observer ──
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+    }, { threshold: 0.12 });
 
-    function handleAssessment(e) {
-      e.preventDefault();
-      const form = e.target;
-      const email = form.querySelector('input[type="email"]').value;
-      form.innerHTML = '<p class="text-sm text-accent font-medium py-3">Thank you. Check your inbox for the self-assessment guide.</p>';
-      // TODO: Connect to email service (Mailchimp, ConvertKit, etc.)
-    }
+    document.querySelectorAll('.reveal, .stagger-children, .slide-left').forEach(el => io.observe(el));
 
-    // Cookie banner
-    function showCookieBanner() {
-      if (!localStorage.getItem('cookieConsent')) {
-        document.getElementById('cookieBanner').classList.remove('hidden');
-      }
-    }
-    function acceptCookies() {
-      localStorage.setItem('cookieConsent', 'accepted');
-      document.getElementById('cookieBanner').classList.add('hidden');
-      // TODO: Initialize analytics (GA, Plausible, etc.)
-    }
-    function declineCookies() {
-      localStorage.setItem('cookieConsent', 'declined');
-      document.getElementById('cookieBanner').classList.add('hidden');
-    }
-
-    // Privacy/Terms toggle
-    document.querySelectorAll('a[href="#privacy"], a[href="#terms"]').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        document.querySelectorAll('#privacy, #terms').forEach(s => s.classList.add('hidden'));
-        target.classList.toggle('hidden');
-        target.scrollIntoView({ behavior: 'smooth' });
+    // ── Hero lines fire on load ──
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.hero-line').forEach(el => {
+        setTimeout(() => el.classList.add('active'), 100);
       });
     });
 
-    window.addEventListener('load', showCookieBanner);
+    // ── Counter animation ──
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.querySelectorAll('.stat-number').forEach(el => {
+          const target = parseInt(el.dataset.target);
+          const suffix = el.dataset.suffix || '';
+          let start = 0;
+          const duration = 1200;
+          const step = (timestamp) => {
+            if (!start) start = timestamp;
+            const progress = Math.min((timestamp - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.floor(eased * target) + (progress === 1 ? suffix : '');
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        });
+        counterObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.5 });
+
+    const statsSection = document.querySelector('.stat-number')?.closest('section');
+    if (statsSection) counterObserver.observe(statsSection);
+
+    // ── Scroll progress ──
+    const progressBar = document.getElementById('progress-bar');
+    const nav = document.getElementById('main-nav');
+    const stickyCta = document.getElementById('sticky-cta');
+    const footer = document.querySelector('footer');
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+
+      // Progress bar
+      progressBar.style.width = (scrollY / docH * 100) + '%';
+
+      // Nav shadow
+      nav.classList.toggle('scrolled', scrollY > 20);
+
+      // Sticky CTA
+      const footerTop = footer.getBoundingClientRect().top + scrollY - window.innerHeight;
+      stickyCta.classList.toggle('visible', scrollY > 500 && scrollY < footerTop);
+    }, { passive: true });
+
+    // ── Mobile menu ──
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    hamburgerBtn.addEventListener('click', () => {
+      hamburgerBtn.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburgerBtn.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
   </script>
 </body>
 </html>
-         
+        
+
